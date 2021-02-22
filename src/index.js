@@ -1,52 +1,37 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express')
-
-const typeDefs = gql`
- type Query {  
-    listing: [Todo!]!
-}
-
-type Mutation {
-    addTodo(content: String!): Todo!
-}
-type Todo {
-    id: ID!
-    content: String!
-    createdAt: String!
-    updatedAt: String
-    isDone: Boolean!
-}
-`
-
-const resolvers =  {
-    Query: {
-        listing: (_,__,context) => {
-            return context.prisma.todo.findMany()
-        }
-    },
-    Mutation: {
-        addTodo: async(_, { content }, context ) => {
-            const newTodo = await context.prisma.todo.create({
-                data: {
-                    content
-                }
-            })
-            return newTodo
-        }
-    }  
-}
+const { ApolloServer } = require('apollo-server-express')
+const session = require('express-session')
+const { typeDefs } = require('./typeDefs')
+const { resolvers } = require('./resolvers')
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: {
-        prisma
+    context: ({ req }) => {
+        return {
+            ...req,
+            prisma,
+        }
     }
-})
+ })
   
 const app = express();
+
+app.use(
+    session({
+        name: "todo",
+        secret: "todo",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          secure: false,
+          maxAge: 1000 * 60 * 60 * 24 * 7 * 365, 
+        }
+    })
+)
 server.applyMiddleware({ app });
 
 app.listen({ port: 4000 }, () =>
