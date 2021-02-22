@@ -10,6 +10,8 @@ const typeDefs = gql`
 
 type Mutation {
     addTodo(content: String!): Todo
+    updateTodo(id: Int!, content: String!): Todo
+    deleteTodo(id: Int!): String
     register(username: String!, email: String!, password: String!): User
     login(email: String!, password: String!): User
 }

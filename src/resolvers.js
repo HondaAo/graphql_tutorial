@@ -26,6 +26,31 @@ const resolvers =  {
             console.log(newTodo)
             return newTodo
         },
+        updateTodo: async(_, { id, content }, context ) => {
+            if(!context.session.userId){
+                return null;
+            }
+            const todo = await context.prisma.todo.update({
+                where: {
+                    id
+                },
+                data: {
+                    content
+                }
+            })
+            return todo
+        },
+        deleteTodo: async(_, { id }, context ) => {
+            if(!context.session.userId){
+                return null;
+            }
+            try {
+             await context.prisma.todo.delete({ where: { id }})
+               return "todo was deleted!"   
+            } catch (error) {
+                return "Failed"
+            }
+        },
         register: async(_, { username, email, password }, context ) => {
             const hashedPassword = await bcrypt.hash(password, 10) 
             const newUser = await context.prisma.user.create({
