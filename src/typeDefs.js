@@ -4,6 +4,7 @@ const typeDefs = gql`
 
  type Query {  
     listing: [Todo!]!
+    getTodo(id: Int!): Todo!
     me: User
     user: User
 }
