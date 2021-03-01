@@ -5,6 +5,9 @@ const resolvers =  {
         listing: (_,__,context) => {
             return context.prisma.todo.findMany()
         },
+        getTodo(_, { id }, context) => {
+            return context.prisma.todo.findUnique({ where: {id} })
+        },
         me: (_,__, context ) => {
             if(!context.session.userId){
                 return null;
