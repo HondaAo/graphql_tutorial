@@ -33,6 +33,10 @@ type User {
     password: String!
     todos: [Todo!]!
 }
+
+type Subscription {
+    newTodo: Todo
+}
 `
 
 module.exports = {

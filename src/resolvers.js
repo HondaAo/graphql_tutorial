@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const Subscription = require('./Subscription/newTodo')
 
 const resolvers =  {
     Query: {
@@ -23,7 +24,7 @@ const resolvers =  {
                     user: { connect: { id: context.session.userId } },
                 }
             })
-            console.log(newTodo)
+            context.pubsub.publish("newTodo", newTodo)
             return newTodo
         },
         updateTodo: async(_, { id, content }, context ) => {
@@ -82,7 +83,8 @@ const resolvers =  {
             console.log(parent.id)
             return context.prisma.todo.findUnique({ where: { id: parent.id } }).user()
      }
-    }
+    },
+    Subscription: Subscription
 }
 
 module.exports = {
